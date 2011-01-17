@@ -27,14 +27,16 @@ namespace avcodec
 #else
 extern "C"
 {
-#include "ffmpeg/include/ffmpeg/avformat.h"
+//#include "ffmpeg/include/ffmpeg/avformat.h"
+#include <libavformat/avformat.h>
 }
 #endif
 
 #if !defined(HAVE_IMG_CONVERT)
 extern "C"
 {
-#include "ffmpeg/include/ffmpeg/swscale.h"
+//#include "ffmpeg/include/ffmpeg/swscale.h"
+//#include <swscale.h>
 }
 #endif // HAVE_IMG_CONVERT
     void img_convert__(AVPicture *dst, int dst_pix_fmt,

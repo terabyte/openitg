@@ -290,11 +290,11 @@ bool RageThread::EnumThreadIDs( int n, uint64_t &iID )
 	return true;
 }
 
-int RageThread::Wait()
+void * RageThread::Wait()
 {
 	ASSERT( m_pSlot != NULL );
 	ASSERT( m_pSlot->pImpl != NULL );
-	int ret = m_pSlot->pImpl->Wait();
+	void * ret = m_pSlot->pImpl->Wait();
 
 	LockMut(g_ThreadSlotsLock);
 

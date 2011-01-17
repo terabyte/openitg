@@ -39,14 +39,14 @@ uint64_t ThreadImpl_Pthreads::GetThreadId() const
 	return threadHandle;
 }
 
-int ThreadImpl_Pthreads::Wait()
+void * ThreadImpl_Pthreads::Wait()
 {
 	void *val;
 	int ret = pthread_join( thread, &val );
 	if( ret )
 		RageException::Throw( "pthread_join: %s", strerror(errno) );
 
-	return (int) val;
+	return val;
 }
 
 ThreadImpl *MakeThisThread()

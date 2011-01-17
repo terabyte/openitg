@@ -48,7 +48,7 @@ uint64_t ThreadImpl_Win32::GetThreadId() const
 	return (uint64_t) ThreadId;
 }
 
-int ThreadImpl_Win32::Wait()
+void * ThreadImpl_Win32::Wait()
 {
 	WaitForSingleObject( ThreadHandle, INFINITE );
 
@@ -58,7 +58,7 @@ int ThreadImpl_Win32::Wait()
 	CloseHandle( ThreadHandle );
 	ThreadHandle = NULL;
 
-	return ret;
+	return reinterpret_cast<void*>(ret);
 }
 
 /* SetThreadName magic comes from VirtualDub. */

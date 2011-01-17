@@ -452,8 +452,16 @@ main_LDADD = \
 
 nodist_openitg_SOURCES = verstub.cpp
 openitg_SOURCES = $(main_SOURCES)
+
+if ITG_ARCADE
 openitg_LDADD = $(main_LDADD) \
 	$(srcdir)/ffmpeg/lib/libavformat.a $(srcdir)/ffmpeg/lib/libavcodec.a
+else
+# for non-arcade, use system avformat/avcode libs which should work on both 32
+# and 64 bit.
+openitg_LDADD = $(main_LDADD) \
+	-lavformat -lavcodec -lavutil
+endif
 
 if HAVE_GTK
 bin_PROGRAMS += GtkModule.so
