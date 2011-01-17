@@ -4,7 +4,7 @@
 #include "LightsDriver.h"
 
 /* included because we need CLightsState and API data. */
-#include "../../../Docs/LightsDriver-API/LightsDriver_ModuleDefs.h"
+#include "../LightsDriverAPI/LightsDriver_ModuleDefs.h"
 
 class LightsDriver_Dynamic: public LightsDriver
 {
