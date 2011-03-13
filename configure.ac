@@ -176,7 +176,9 @@ SM_TLS
 SM_LIBUSB
 
 # for linux joystick hotplug
+have_inotify=no
 AC_CHECK_HEADER([sys/inotify.h], 
+	have_inotify=yes
 	AC_DEFINE(HAVE_INOTIFY, 1, [inotify support in kernel])
 ,)
 
@@ -309,3 +311,23 @@ if test "$have_libresample" = "no"; then
 fi
 
 AC_OUTPUT
+
+echo
+echo
+
+echo "OpenITG $oitg_version ($oitg_date)"
+
+echo
+
+echo "Arcade build		$itg_arcade"
+echo "SSE2 optimizations	$with_sse2 (supported: $have_sse2)"
+echo "SDL			$enable_sdl"
+echo "FFMPEG			$have_ffmpeg"
+echo "libresample		$have_libresample"
+echo "libcrypto++		$have_libcryptopp"
+echo "GTK2			$enable_gtk2"
+echo "ALSA			$alsa"
+echo "OSS			$ac_cv_header_sys_soundcard_h (forced: $force_oss)"
+echo "inotify hotplug		$have_inotify"
+
+echo
