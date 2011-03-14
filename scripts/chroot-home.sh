@@ -1,14 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
 DEBIAN_MIRROR="http://ftp.us.debian.org/debian"
 DEBIAN_DIST_NAME="squeeze"
 #DEBIAN_SARGE_BACKPORTS="deb http://archive.debian.org/debian-backports sarge-backports main contrib"
 
-if [ `uname -m` == "x86_64" ]; then
-	echo "Detected 64-bit"
+UNAME_M=`uname -m`
+if [ "$UNAME_M" == "x86_64" ]; then
+	echo "Detected 64-bit: $UNAME_M"
 	ARCH="amd64"
 else
-	echo "Detected 32-bit"
+	echo "Detected 32-bit: $UNAME_M"
 	ARCH="i386"
 fi
 
@@ -60,7 +61,7 @@ echo "Installing necessary dev packages..."
 echo "deb http://ftp.debian.org/debian squeeze main contrib non-free" >/etc/apt/sources.list
 apt-get update
 apt-get install build-essential gettext automake1.9 gcc g++ libswscale-dev libavcodec-dev libavformat-dev libxt-dev libogg-dev libpng-dev libjpeg-dev libvorbis-dev libusb-dev libglu1-mesa-dev libx11-dev libxrandr-dev liblua50-dev liblualib50-dev nvidia-glx-dev libmad0-dev libasound-dev git-core
-echo "OpenITG AC chroot successfully set up!"
+echo "OpenITG HOME chroot successfully set up!"
 exec /bin/bash
 !
 	chmod +x $CHROOT_DIR/root/first_time_setup.sh

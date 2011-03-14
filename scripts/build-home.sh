@@ -7,9 +7,9 @@
 ./configure --with-x --with-gnu-ld
 if [ "x$1" == "x" ];
 then
-	make
+#	make
 else
-	make -j$1
+#	make -j$1
 fi
 
 

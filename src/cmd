@@ -1,0 +1,1 @@
+g++ -O3 -c -g -I. -I/usr/include/ -include config.h ./arch/Sound/RageSoundDriver_ALSA9_Software.cpp -o ./arch/Sound/RageSoundDriver_ALSA9_Software.Po
