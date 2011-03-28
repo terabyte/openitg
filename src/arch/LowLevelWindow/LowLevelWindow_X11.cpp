@@ -29,7 +29,11 @@ LowLevelWindow_X11::LowLevelWindow_X11()
 		RageException::Throw( "Failed to establish a connection with the X server." );
 	}
 	g_X11Display = X11Helper::Dpy;
-	g_pScreenConfig = XRRGetScreenInfo( g_X11Display, RootWindow(g_X11Display, DefaultScreen(g_X11Display)) );
+	// If we are windowed, don't use xrandr
+	if ( ! PREFSMAN->m_bWindowed ) {
+		LOG->Debug("FOOOZ BRAH!");
+		g_pScreenConfig = XRRGetScreenInfo( g_X11Display, RootWindow(g_X11Display, DefaultScreen(g_X11Display)) );
+	}
 	m_bWasWindowed = true;
 
 	// we need to cache this, because PREFSMAN dtors before LowLevelWindow_X11 does.
@@ -154,7 +158,9 @@ CString LowLevelWindow_X11::TryVideoMode( RageDisplay::VideoModeParams p, bool &
 
 		GLXContext ctxt = glXCreateContext(X11Helper::Dpy, xvi, NULL, True);
 
-		glXMakeCurrent( X11Helper::Dpy, X11Helper::Win, ctxt );
+		bool loser = glXMakeCurrent( X11Helper::Dpy, X11Helper::Win, ctxt );
+		LOG->Debug("We are such clowns. %d", (int)loser);
+// XXX TODO CHM NOTE TO SELF: glXMakeCurrent is returning false, omg, wtf, figure out why it fails.  *sadface*.
 
 		XMapWindow( X11Helper::Dpy, X11Helper::Win );
 
@@ -180,19 +186,27 @@ CString LowLevelWindow_X11::TryVideoMode( RageDisplay::VideoModeParams p, bool &
 
 		X11Helper::CloseMask( StructureNotifyMask );
 
-		g_iOldSize = XRRConfigCurrentConfiguration( g_pScreenConfig, &g_OldRotation );
+		// If we are windowed, don't use xrandr
+		if ( ! PREFSMAN->m_bWindowed ) {
+			LOG->Debug("OH SHITZ1");
+			g_iOldSize = XRRConfigCurrentConfiguration( g_pScreenConfig, &g_OldRotation );
+		}
 
 		if (!p.windowed)
 		{
 			int iSizesXct;
-			XRRScreenSize *pSizesX = XRRSizes( X11Helper::Dpy, DefaultScreen(X11Helper::Dpy), &iSizesXct );
+			XRRScreenSize *pSizesX = NULL;
+			if ( ! PREFSMAN->m_bWindowed ) {
+				LOG->Debug("OH SHITZ2");
+				pSizesX = XRRSizes( X11Helper::Dpy, DefaultScreen(X11Helper::Dpy), &iSizesXct );
+			}
 			ASSERT_M( iSizesXct != 0, "Couldn't get resolution list from X server" );
 		
 			int iSizeMatch = -1;
 			
 			for( int i = 0; i < iSizesXct; ++i )
 			{
-				if( pSizesX[i].width == p.width && pSizesX[i].height == p.height )
+				if( pSizesX != NULL && pSizesX[i].width == p.width && pSizesX[i].height == p.height )
 				{
 					CHECKPOINT_M( ssprintf("%dx%d", pSizesX[i].width, pSizesX[i].height) );
 					iSizeMatch = i;
@@ -202,7 +216,11 @@ CString LowLevelWindow_X11::TryVideoMode( RageDisplay::VideoModeParams p, bool &
 	
 			// Set this mode.
 			// XXX: This doesn't handle if the config has changed since we queried it (see man Xrandr)
-			XRRSetScreenConfig( X11Helper::Dpy, g_pScreenConfig, RootWindow(X11Helper::Dpy, DefaultScreen(X11Helper::Dpy)), iSizeMatch, 1, CurrentTime );
+			// If we are windowed, don't use xrandr
+			if ( ! PREFSMAN->m_bWindowed ) {
+				LOG->Debug("OH SHITZ3");
+				XRRSetScreenConfig( X11Helper::Dpy, g_pScreenConfig, RootWindow(X11Helper::Dpy, DefaultScreen(X11Helper::Dpy)), iSizeMatch, 1, CurrentTime );
+			}
 			
 			// Move the window to the corner that the screen focuses in on.
 			XMoveWindow( X11Helper::Dpy, X11Helper::Win, 0, 0 );
@@ -220,7 +238,10 @@ CString LowLevelWindow_X11::TryVideoMode( RageDisplay::VideoModeParams p, bool &
 	        {
 	                if( !m_bWasWindowed )
 	                {
-	                        XRRSetScreenConfig( X11Helper::Dpy, g_pScreenConfig, RootWindow(X11Helper::Dpy, DefaultScreen(X11Helper::Dpy)), g_iOldSize, g_OldRotation, CurrentTime );
+							if ( ! PREFSMAN->m_bWindowed ) {
+								LOG->Debug("OH SHITZ4");
+								XRRSetScreenConfig( X11Helper::Dpy, g_pScreenConfig, RootWindow(X11Helper::Dpy, DefaultScreen(X11Helper::Dpy)), g_iOldSize, g_OldRotation, CurrentTime );
+							}
 	                        // In windowed mode, we actually want the WM to function normally.
 	                        // Release any previous grab.
 	                        XUngrabKeyboard( X11Helper::Dpy, CurrentTime );
